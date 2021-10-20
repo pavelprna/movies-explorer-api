@@ -1,9 +1,11 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const BadRequestError = require('../errors/bad-request-error');
 const NotFoundError = require('../errors/not-found-error');
 const ConflictError = require('../errors/conflict-error');
+const UnauthorizedError = require('../errors/unauthorized-error');
 
 const getUser = (req, res, next) => {
   User.findById(req.params.id)
@@ -47,7 +49,6 @@ const editUser = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  console.log(req.body);
   const { name, email, password } = req.body;
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
@@ -72,6 +73,34 @@ const createUser = (req, res, next) => {
     .catch(next);
 };
 
+const login = (req, res, next) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      console.log(req.body);
+      const { NODE_ENV = 'develop', JWT_SECRET } = process.env;
+
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        { expiresIn: '7d' },
+      );
+
+      res.cookie('jwt', token, {
+        maxAge: 3600000 * 24 * 7,
+        httpOnly: true,
+        sameSite: 'None',
+        secure: true,
+      })
+        .send({ message: 'Вход выполнен' });
+    })
+    .catch((error) => {
+      throw new UnauthorizedError(error.message);
+    })
+    .catch(next);
+};
+
 module.exports = {
-  getUser, editUser, createUser,
+  getUser, editUser, createUser, login,
 };

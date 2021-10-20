@@ -1,8 +1,9 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
-const { createUser } = require('./controllers/user');
+const { createUser, login } = require('./controllers/user');
 
 const NotFoundError = require('./errors/not-found-error');
 const error = require('./middlewares/error');
@@ -13,12 +14,14 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
   useNewUrlParser: true,
 });
 
 app.post('/signup', createUser);
+app.post('/signin', login);
 
 app.use('/users', require('./routes/user'));
 
