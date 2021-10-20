@@ -1,7 +1,9 @@
+const bcrypt = require('bcrypt');
 const User = require('../models/user');
 
 const BadRequestError = require('../errors/bad-request-error');
 const NotFoundError = require('../errors/not-found-error');
+const ConflictError = require('../errors/conflict-error');
 
 const getUser = (req, res, next) => {
   User.findById(req.params.id)
@@ -44,6 +46,32 @@ const editUser = (req, res, next) => {
     .catch(next);
 };
 
+const createUser = (req, res, next) => {
+  console.log(req.body);
+  const { name, email, password } = req.body;
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, email, password: hash,
+    })
+      .then((user) => {
+        res.send({
+          name: user.name,
+          email: user.email,
+          _id: user._id,
+        });
+      }))
+    .catch((error) => {
+      if (error.name === 'ValidationError') {
+        throw new BadRequestError('Переданы некорректные данные при создании пользователя');
+      } else if (error.code === 11000) {
+        throw new ConflictError(`email ${email} уже зарегистрирован`);
+      } else {
+        next(error);
+      }
+    })
+    .catch(next);
+};
+
 module.exports = {
-  getUser, editUser,
+  getUser, editUser, createUser,
 };
