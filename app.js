@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const { createUser, login } = require('./controllers/user');
+const auth = require('./middlewares/auth');
 
 const NotFoundError = require('./errors/not-found-error');
 const error = require('./middlewares/error');
@@ -22,6 +23,8 @@ mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
 
 app.post('/signup', createUser);
 app.post('/signin', login);
+
+app.use(auth);
 
 app.use('/users', require('./routes/user'));
 

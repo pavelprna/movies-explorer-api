@@ -8,7 +8,7 @@ const ConflictError = require('../errors/conflict-error');
 const UnauthorizedError = require('../errors/unauthorized-error');
 
 const getUser = (req, res, next) => {
-  User.findById(req.params.id)
+  User.findById(req.user._id)
     .then((user) => {
       if (user) {
         res.send(user);
@@ -78,7 +78,6 @@ const login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      console.log(req.body);
       const { NODE_ENV = 'develop', JWT_SECRET } = process.env;
 
       const token = jwt.sign(
