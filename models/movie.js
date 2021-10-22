@@ -52,7 +52,6 @@ const movieSchema = mongoose.Schema({
     required: true,
   },
   movieId: {
-    // TODO: add validation
     type: String,
     required: true,
   },

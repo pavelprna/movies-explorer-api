@@ -27,6 +27,7 @@ app.post('/signin', login);
 app.use(auth);
 
 app.use('/users', require('./routes/user'));
+app.use('/movies', require('./routes/movie'));
 
 app.get('*', () => {
   throw new NotFoundError('Ресурс не найден');
