@@ -3,9 +3,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { createUser, login } = require('./controllers/user');
 const auth = require('./middlewares/auth');
-
 const NotFoundError = require('./errors/not-found-error');
 const error = require('./middlewares/error');
 
@@ -21,6 +21,8 @@ mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
   useNewUrlParser: true,
 });
 
+app.use(requestLogger);
+
 app.post('/signup', createUser);
 app.post('/signin', login);
 
@@ -33,6 +35,7 @@ app.get('*', () => {
   throw new NotFoundError('Ресурс не найден');
 });
 
+app.use(errorLogger);
 app.use(error);
 
 app.listen(PORT, () => {
