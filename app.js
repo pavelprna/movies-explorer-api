@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { createUserValidator, loginValidator } = require('./middlewares/validation');
-const { createUser, login } = require('./controllers/user');
+const { createUser, login, signout } = require('./controllers/user');
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/not-found-error');
 const error = require('./middlewares/error');
@@ -26,6 +26,7 @@ app.use(requestLogger);
 
 app.post('/signup', createUserValidator, createUser);
 app.post('/signin', loginValidator, login);
+app.post('/signout', signout);
 
 app.use(auth);
 
