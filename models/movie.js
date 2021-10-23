@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
 const validator = require('validator');
+const mongoose = require('mongoose');
 
 const movieSchema = mongoose.Schema({
   country: {
@@ -26,7 +26,7 @@ const movieSchema = mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (url) => validator.isUrl(url),
+      validator: (url) => validator.isURL(url, { protocols: ['http', 'https'], require_protocol: true }),
       message: 'Неверный формат ссылки',
     },
   },
@@ -34,7 +34,7 @@ const movieSchema = mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (url) => validator.isUrl(url),
+      validator: (url) => validator.isURL(url, { protocols: ['http', 'https'], require_protocol: true }),
       message: 'Неверный формат ссылки',
     },
   },
@@ -42,7 +42,7 @@ const movieSchema = mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (url) => validator.isUrl(url),
+      validator: (url) => validator.isURL(url, { protocols: ['http', 'https'], require_protocol: true }),
       message: 'Неверный формат ссылки',
     },
   },

@@ -41,6 +41,8 @@ const editUser = (req, res, next) => {
     .catch((error) => {
       if (error.name === 'ValidationError') {
         throw new BadRequestError('Переданы некорректные данные при обновлении профиля');
+      } else if (error.code === 11000) {
+        throw new ConflictError(`email ${email} уже зарегистрирован`);
       } else {
         next(error);
       }
