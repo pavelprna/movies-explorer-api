@@ -6,11 +6,8 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
+const router = require('./routes');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const { createUserValidator, loginValidator } = require('./middlewares/validation');
-const { createUser, login, signout } = require('./controllers/user');
-const auth = require('./middlewares/auth');
-const NotFoundError = require('./errors/not-found-error');
 const error = require('./middlewares/error');
 
 const { PORT = 3000 } = process.env;
@@ -48,18 +45,7 @@ mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
 
 app.use(requestLogger);
 
-app.post('/signup', createUserValidator, createUser);
-app.post('/signin', loginValidator, login);
-app.post('/signout', signout);
-
-app.use(auth);
-
-app.use('/users', require('./routes/user'));
-app.use('/movies', require('./routes/movie'));
-
-app.get('*', () => {
-  throw new NotFoundError('Ресурс не найден');
-});
+app.use(router);
 
 app.use(errorLogger);
 app.use(errors());
