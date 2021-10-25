@@ -9,23 +9,21 @@ const { errors } = require('celebrate');
 const router = require('./routes');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const error = require('./middlewares/error');
-
-const { PORT = 3000 } = process.env;
+const {
+  PORT,
+  MONGODB_URL,
+  CORS_ALLOW_LIST,
+  errorMessage,
+} = require('./utils/constants');
 
 const app = express();
 
-const allowList = [
-  'https://prna.nomoredomains.club',
-  'http://prna.nomoredomains.club',
-  'http://localhost:3000',
-];
-
 const corsOptions = {
   origin(origin, callback) {
-    if (allowList.indexOf(origin) !== -1 || !origin) {
+    if (CORS_ALLOW_LIST.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error(errorMessage.corsError));
     }
   },
   credentials: true,
@@ -39,7 +37,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
+mongoose.connect(MONGODB_URL, {
   useNewUrlParser: true,
 });
 

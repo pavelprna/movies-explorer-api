@@ -1,17 +1,17 @@
 const jwt = require('jsonwebtoken');
 const UnauthorizedError = require('../errors/unauthorized-error');
+const { JWT_SECRET, errorMessage } = require('../utils/constants');
 
 module.exports = (req, res, next) => {
   const token = req.cookies.jwt;
-  const { NODE_ENV = 'develop', JWT_SECRET } = process.env;
 
   let payload;
 
   try {
-    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
+    payload = jwt.verify(token, JWT_SECRET);
     req.user = payload;
     next();
   } catch (err) {
-    next(new UnauthorizedError('Присланный токен некорректен'));
+    next(new UnauthorizedError(errorMessage.incorrectToken));
   }
 };

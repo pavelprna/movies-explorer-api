@@ -6,6 +6,13 @@ const BadRequestError = require('../errors/bad-request-error');
 const NotFoundError = require('../errors/not-found-error');
 const ConflictError = require('../errors/conflict-error');
 const UnauthorizedError = require('../errors/unauthorized-error');
+const {
+  VALIDATION_ERROR,
+  JWT_SECRET,
+  CAST_ERROR,
+  errorMessage,
+  okMessage,
+} = require('../utils/constants');
 
 const getUser = (req, res, next) => {
   User.findById(req.user._id)
@@ -13,12 +20,12 @@ const getUser = (req, res, next) => {
       if (user) {
         res.send(user);
       } else {
-        throw new BadRequestError('Нет пользователя с таким _id');
+        throw new BadRequestError(errorMessage.incui);
       }
     })
     .catch((error) => {
-      if (error.name === 'CastError') {
-        throw new BadRequestError('Неверно указан _id пользователя');
+      if (error.name === CAST_ERROR) {
+        throw new BadRequestError(errorMessage.incorrectUserId);
       } else {
         next(error);
       }
@@ -35,14 +42,14 @@ const editUser = (req, res, next) => {
       if (user) {
         res.send(user);
       } else {
-        throw new NotFoundError('Нет пользователя с таким _id');
+        throw new NotFoundError(errorMessage.notFoundUserId);
       }
     })
     .catch((error) => {
-      if (error.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные при обновлении профиля');
+      if (error.name === VALIDATION_ERROR) {
+        throw new BadRequestError(errorMessage.incorrectUpdateUserData);
       } else if (error.code === 11000) {
-        throw new ConflictError(`email ${email} уже зарегистрирован`);
+        throw new ConflictError(errorMessage.conflictUserEmail(email));
       } else {
         next(error);
       }
@@ -64,10 +71,10 @@ const createUser = (req, res, next) => {
         });
       }))
     .catch((error) => {
-      if (error.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные при создании пользователя');
+      if (error.name === VALIDATION_ERROR) {
+        throw new BadRequestError(errorMessage.incorrectCreateUserData);
       } else if (error.code === 11000) {
-        throw new ConflictError(`email ${email} уже зарегистрирован`);
+        throw new ConflictError(errorMessage.conflictUserEmail(email));
       } else {
         next(error);
       }
@@ -80,11 +87,9 @@ const login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const { NODE_ENV = 'develop', JWT_SECRET } = process.env;
-
       const token = jwt.sign(
         { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        JWT_SECRET,
         { expiresIn: '7d' },
       );
 
@@ -94,7 +99,7 @@ const login = (req, res, next) => {
         sameSite: 'None',
         secure: true,
       })
-        .send({ message: 'Вход выполнен' });
+        .send({ message: okMessage.signInDone });
     })
     .catch((error) => {
       throw new UnauthorizedError(error.message);
@@ -103,7 +108,7 @@ const login = (req, res, next) => {
 };
 
 const signout = (req, res, next) => {
-  res.clearCookie('jwt').send({ message: 'Успешный выход' });
+  res.clearCookie('jwt').send({ message: okMessage.signOutDone });
   next();
 };
 
