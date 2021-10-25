@@ -15,6 +15,7 @@ const {
   CORS_ALLOW_LIST,
   errorMessage,
 } = require('./utils/constants');
+const limiter = require('./middlewares/limiter');
 
 const app = express();
 
@@ -42,6 +43,7 @@ mongoose.connect(MONGODB_URL, {
 });
 
 app.use(requestLogger);
+app.use(limiter);
 
 app.use(router);
 
