@@ -9,7 +9,6 @@ const UnauthorizedError = require('../errors/unauthorized-error');
 const {
   VALIDATION_ERROR,
   JWT_SECRET,
-  CAST_ERROR,
   errorMessage,
   okMessage,
 } = require('../utils/constants');
@@ -21,13 +20,6 @@ const getUser = (req, res, next) => {
         res.send(user);
       } else {
         throw new BadRequestError(errorMessage.incui);
-      }
-    })
-    .catch((error) => {
-      if (error.name === CAST_ERROR) {
-        throw new BadRequestError(errorMessage.incorrectUserId);
-      } else {
-        next(error);
       }
     })
     .catch(next);
