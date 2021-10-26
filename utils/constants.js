@@ -44,7 +44,7 @@ const okMessage = {
 module.exports = {
   PORT,
   JWT_SECRET: NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-  MONGODB_URL,
+  MONGODB_URL: NODE_ENV === 'production' ? MONGODB_URL : 'mongodb://localhost:27017/moviesdb',
   CORS_ALLOW_LIST,
   VALIDATION_ERROR,
   CAST_ERROR,
