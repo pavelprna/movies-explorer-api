@@ -62,7 +62,7 @@ const removeMovie = (req, res, next) => {
         throw new ForbiddenError(errorMessage.notOwnerDeletion);
       } else {
         return movie.deleteOne()
-          .then(() => res.send(okMessage.movieDeleted));
+          .then(() => res.send({ message: okMessage.movieDeleted }));
       }
     })
     .catch((error) => {
