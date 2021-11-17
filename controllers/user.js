@@ -19,7 +19,7 @@ const getUser = (req, res, next) => {
       if (user) {
         res.send(user);
       } else {
-        throw new BadRequestError(errorMessage.incui);
+        throw new BadRequestError(errorMessage.incorrectUserId);
       }
     })
     .catch(next);

@@ -3,8 +3,8 @@ const {
 } = process.env;
 
 const CORS_ALLOW_LIST = [
-  'https://prna.nomoredomains.club',
-  'http://prna.nomoredomains.club',
+  'https://prna.nomoredomains.monster',
+  'http://prna.nomoredomains.monster',
   'http://localhost:3000',
 ];
 
